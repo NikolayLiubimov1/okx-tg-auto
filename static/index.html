@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TG Auto</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+  nav { background: #1a1d2e; border-bottom: 1px solid #2d3748; padding: 0 24px; display: flex; align-items: center; gap: 8px; height: 56px; }
+  nav .logo { font-weight: 700; font-size: 18px; color: #7c3aed; margin-right: 24px; }
+  nav button { background: none; border: none; color: #94a3b8; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all .15s; }
+  nav button:hover, nav button.active { background: #2d3748; color: #e2e8f0; }
+  nav button.active { color: #a78bfa; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .page { display: none; } .page.active { display: block; }
+  h2 { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #f1f5f9; }
+  .card { background: #1a1d2e; border: 1px solid #2d3748; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+  label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
+  select, input[type=number] { background: #0f1117; border: 1px solid #2d3748; color: #e2e8f0; padding: 8px 12px; border-radius: 6px; font-size: 14px; width: 100%; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .row > div { flex: 1; min-width: 140px; }
+  .btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; transition: all .15s; }
+  .btn-primary { background: #7c3aed; color: #fff; }
+  .btn-primary:hover { background: #6d28d9; }
+  .btn-primary:disabled { background: #4c1d95; color: #a78bfa; cursor: not-allowed; }
+  .btn-ghost { background: #2d3748; color: #e2e8f0; }
+  .btn-ghost:hover { background: #374151; }
+  .toggle { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .toggle input { width: 36px; height: 20px; cursor: pointer; }
+  .toggle span { font-size: 14px; color: #94a3b8; }
+  #log-box { background: #0a0c14; border: 1px solid #2d3748; border-radius: 8px; padding: 16px; height: 340px; overflow-y: auto; font-family: monospace; font-size: 13px; line-height: 1.6; }
+  .log-sent { color: #34d399; }
+  .log-skip { color: #94a3b8; }
+  .log-error { color: #f87171; }
+  .log-info { color: #60a5fa; }
+  .log-warn { color: #fbbf24; }
+  .progress-bar { background: #2d3748; border-radius: 99px; height: 8px; margin: 12px 0; overflow: hidden; }
+  .progress-fill { background: #7c3aed; height: 100%; border-radius: 99px; transition: width .3s; width: 0%; }
+  .stat { font-size: 13px; color: #94a3b8; margin-top: 6px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 12px; color: #64748b; border-bottom: 1px solid #2d3748; font-weight: 500; }
+  td { padding: 8px 12px; border-bottom: 1px solid #1e2330; }
+  tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-p0 { background: #7c3aed22; color: #a78bfa; }
+  .badge-p1 { background: #2563eb22; color: #60a5fa; }
+  .badge-p2 { background: #05966922; color: #34d399; }
+  .badge-tv { background: #d9770622; color: #fb923c; }
+  .badge-ftt { background: #be123c22; color: #f87171; }
+  .badge-default { background: #2d374822; color: #94a3b8; }
+  textarea { background: #0f1117; border: 1px solid #2d3748; color: #e2e8f0; padding: 10px 12px; border-radius: 6px; font-size: 14px; width: 100%; resize: vertical; min-height: 80px; font-family: inherit; }
+  .tmpl-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media(max-width:640px) { .tmpl-grid { grid-template-columns: 1fr; } }
+  .tmpl-label { font-size: 12px; font-weight: 600; color: #7c3aed; margin-bottom: 6px; }
+  .save-btn { font-size: 12px; padding: 4px 10px; margin-top: 6px; }
+  .saved-flash { color: #34d399; font-size: 12px; margin-left: 8px; opacity: 0; transition: opacity .3s; }
+  .filter-row { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-row select { width: auto; }
+  #contacts-count { font-size: 13px; color: #64748b; margin-left: auto; }
+  .log-history-entry { display: flex; gap: 12px; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #1e2330; }
+  .log-history-entry:last-child { border: none; }
+  .log-ts { color: #475569; min-width: 160px; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">TG Auto</div>
+  <button class="active" onclick="showPage('send', this)">Send</button>
+  <button onclick="showPage('templates', this)">Templates</button>
+  <button onclick="showPage('contacts', this)">Contacts</button>
+  <button onclick="showPage('history', this)">History</button>
+</nav>
+<main>
+
+<!-- SEND PAGE -->
+<div id="page-send" class="page active">
+  <h2>Send Messages</h2>
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>Cohort</label>
+        <select id="send-cohort">
+          <option value="">All cohorts</option>
+          <option>P0</option><option>P1</option><option>P2</option>
+          <option>TV Affiliates</option><option>FTT Affiliates</option>
+        </select>
+      </div>
+      <div>
+        <label>Delay (seconds)</label>
+        <input type="number" id="send-delay" value="5" min="1" max="60">
+      </div>
+      <div>
+        <label>Daily limit</label>
+        <input type="number" id="send-limit" value="150" min="1" max="500">
+      </div>
+    </div>
+    <div class="toggle">
+      <input type="checkbox" id="dry-run">
+      <span>Dry run (preview only, no messages sent)</span>
+    </div>
+    <button class="btn btn-primary" id="send-btn" onclick="startSend()">Send Messages</button>
+    <button class="btn btn-ghost" id="stop-btn" style="display:none;margin-left:8px" onclick="stopSend()">Stop</button>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:14px;font-weight:600">Live progress</span>
+      <span class="stat" id="progress-stat">—</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div id="log-box"><span style="color:#475569">Ready.</span></div>
+  </div>
+</div>
+
+<!-- TEMPLATES PAGE -->
+<div id="page-templates" class="page">
+  <h2>Message Templates</h2>
+  <div id="templates-container"><span style="color:#475569">Loading...</span></div>
+</div>
+
+<!-- CONTACTS PAGE -->
+<div id="page-contacts" class="page">
+  <h2>Contacts</h2>
+  <div class="filter-row">
+    <label style="margin:0;color:#e2e8f0">Filter:</label>
+    <select id="contacts-cohort-filter" onchange="loadContacts()">
+      <option value="">All cohorts</option>
+      <option>P0</option><option>P1</option><option>P2</option>
+      <option>TV Affiliates</option><option>FTT Affiliates</option>
+    </select>
+    <button class="btn btn-ghost" style="padding:6px 14px;font-size:13px" onclick="loadContacts()">Refresh</button>
+    <span id="contacts-count"></span>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th>Name</th><th>Username / Phone</th><th>Cohort</th><th>Language</th></tr></thead>
+      <tbody id="contacts-table"><tr><td colspan="4" style="color:#475569;text-align:center;padding:24px">Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- HISTORY PAGE -->
+<div id="page-history" class="page">
+  <h2>Send History</h2>
+  <div class="card" id="history-container"><span style="color:#475569">Loading...</span></div>
+</div>
+
+</main>
+<script>
+const COHORT_BADGE = {
+  'P0':'badge-p0','P1':'badge-p1','P2':'badge-p2',
+  'TV Affiliates':'badge-tv','FTT Affiliates':'badge-ftt'
+};
+
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'templates') loadTemplates();
+  if (name === 'contacts') loadContacts();
+  if (name === 'history') loadHistory();
+}
+
+// --- SEND ---
+let evtSource = null;
+
+function startSend() {
+  const cohort = document.getElementById('send-cohort').value;
+  const delay = document.getElementById('send-delay').value;
+  const limit = document.getElementById('send-limit').value;
+  const dryRun = document.getElementById('dry-run').checked;
+
+  document.getElementById('send-btn').disabled = true;
+  document.getElementById('stop-btn').style.display = 'inline-block';
+  document.getElementById('log-box').innerHTML = '';
+  setProgress(0, 0, parseInt(limit));
+
+  fetch('/api/send', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({cohort: cohort || null, dry_run: dryRun, delay: parseInt(delay), daily_limit: parseInt(limit)})
+  }).then(res => {
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let total = parseInt(limit);
+
+    function read() {
+      reader.read().then(({done, value}) => {
+        if (done) { sendDone(); return; }
+        const text = decoder.decode(value);
+        text.split('\n').forEach(line => {
+          if (!line.startsWith('data: ')) return;
+          try {
+            const ev = JSON.parse(line.slice(6));
+            handleEvent(ev, total);
+            if (ev.type === 'start') total = ev.total;
+          } catch(e) {}
+        });
+        read();
+      });
+    }
+    read();
+  }).catch(e => logLine(`Connection error: ${e}`, 'log-error'));
+}
+
+function handleEvent(ev, total) {
+  const box = document.getElementById('log-box');
+  if (ev.type === 'start') {
+    logLine(`Starting — ${ev.total} contacts loaded`, 'log-info');
+  } else if (ev.type === 'sent') {
+    logLine(`✓ Sent to ${ev.recipient} [${ev.cohort}]`, 'log-sent');
+    setProgress(ev.sent, ev.limit, ev.limit);
+  } else if (ev.type === 'dry_run') {
+    logLine(`▷ [DRY RUN] ${ev.recipient} [${ev.cohort}]: ${ev.message}`, 'log-info');
+  } else if (ev.type === 'skip') {
+    logLine(`– Skip ${ev.recipient}: ${ev.reason}`, 'log-skip');
+  } else if (ev.type === 'flood_wait') {
+    logLine(`⏳ Flood wait ${ev.seconds}s...`, 'log-warn');
+  } else if (ev.type === 'flood_stop') {
+    logLine(`⛔ ${ev.message}`, 'log-error');
+    sendDone();
+  } else if (ev.type === 'limit') {
+    logLine(ev.message, 'log-warn');
+  } else if (ev.type === 'error') {
+    logLine(`✗ Error ${ev.recipient || ''}: ${ev.message}`, 'log-error');
+  } else if (ev.type === 'done') {
+    logLine(`✔ Done. Sent ${ev.sent} message(s).`, 'log-sent');
+    sendDone();
+  }
+  box.scrollTop = box.scrollHeight;
+}
+
+function sendDone() {
+  document.getElementById('send-btn').disabled = false;
+  document.getElementById('stop-btn').style.display = 'none';
+}
+
+function stopSend() {
+  // Reloads the page to kill the stream—simple and effective
+  if (confirm('Stop sending?')) location.reload();
+}
+
+function logLine(text, cls) {
+  const box = document.getElementById('log-box');
+  const line = document.createElement('div');
+  line.className = cls;
+  line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+  box.appendChild(line);
+}
+
+function setProgress(sent, limit) {
+  const pct = limit > 0 ? Math.min(100, Math.round(sent / limit * 100)) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-stat').textContent = `${sent} / ${limit} sent`;
+}
+
+// --- TEMPLATES ---
+let templates = {};
+
+async function loadTemplates() {
+  const res = await fetch('/api/templates');
+  templates = await res.json();
+  renderTemplates();
+}
+
+function renderTemplates() {
+  const LANGS = ['en', 'ru', 'zh'];
+  const container = document.getElementById('templates-container');
+  container.innerHTML = '';
+  for (const [cohort, langs] of Object.entries(templates)) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span class="badge ${COHORT_BADGE[cohort]||'badge-default'}">${cohort}</span>
+      <span id="saved-${cohort}" class="saved-flash">✓ Saved</span>
+    </div>`;
+    const grid = document.createElement('div');
+    grid.className = 'tmpl-grid';
+    LANGS.forEach(lang => {
+      const col = document.createElement('div');
+      col.innerHTML = `<div class="tmpl-label">${lang.toUpperCase()}</div>
+        <textarea id="tmpl-${cohort}-${lang}" placeholder="Enter message for ${cohort} (${lang})...">${(langs[lang]||'')}</textarea>
+        <button class="btn btn-ghost save-btn" onclick="saveTemplate('${cohort}','${lang}')">Save</button>`;
+      grid.appendChild(col);
+    });
+    card.appendChild(grid);
+    container.appendChild(card);
+  }
+}
+
+async function saveTemplate(cohort, lang) {
+  const message = document.getElementById(`tmpl-${cohort}-${lang}`).value;
+  await fetch('/api/templates', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({cohort, language: lang, message})
+  });
+  const flash = document.getElementById(`saved-${cohort}`);
+  flash.style.opacity = '1';
+  setTimeout(() => flash.style.opacity = '0', 1500);
+}
+
+// --- CONTACTS ---
+async function loadContacts() {
+  const cohort = document.getElementById('contacts-cohort-filter').value;
+  const url = '/api/contacts' + (cohort ? `?cohort=${encodeURIComponent(cohort)}` : '');
+  document.getElementById('contacts-table').innerHTML = '<tr><td colspan="4" style="color:#475569;text-align:center;padding:24px">Loading...</td></tr>';
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    document.getElementById('contacts-count').textContent = `${data.total} contacts`;
+    if (!data.contacts.length) {
+      document.getElementById('contacts-table').innerHTML = '<tr><td colspan="4" style="color:#475569;text-align:center;padding:24px">No contacts found</td></tr>';
+      return;
+    }
+    document.getElementById('contacts-table').innerHTML = data.contacts.map(c => {
+      const badge = COHORT_BADGE[c.cohort] || 'badge-default';
+      const recipient = c.tg_username || c.phone || '—';
+      return `<tr>
+        <td>${c.name||'—'}</td>
+        <td style="color:#94a3b8">${recipient}</td>
+        <td><span class="badge ${badge}">${c.cohort||'—'}</span></td>
+        <td>${(c.language||'en').toUpperCase()}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('contacts-table').innerHTML = `<tr><td colspan="4" style="color:#f87171;text-align:center;padding:24px">${e}</td></tr>`;
+  }
+}
+
+// --- HISTORY ---
+async function loadHistory() {
+  const res = await fetch('/api/log');
+  const data = await res.json();
+  const container = document.getElementById('history-container');
+  if (!data.entries.length) {
+    container.innerHTML = '<span style="color:#475569">No messages sent yet.</span>';
+    return;
+  }
+  container.innerHTML = data.entries.map(e => {
+    const badge = COHORT_BADGE[e.cohort] || 'badge-default';
+    return `<div class="log-history-entry">
+      <span class="log-ts">${e.ts.replace('T',' ').slice(0,19)} UTC</span>
+      <span>${e.recipient}</span>
+      <span class="badge ${badge}">${e.cohort||'—'}</span>
+      <span class="log-sent">${e.status}</span>
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
