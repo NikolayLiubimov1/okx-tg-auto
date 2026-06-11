@@ -9,7 +9,7 @@
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
   nav { background: #1a1d2e; border-bottom: 1px solid #2d3748; padding: 0 24px; display: flex; align-items: center; gap: 8px; height: 56px; }
   nav .logo { display: flex; align-items: center; margin-right: 24px; }
-  nav .logo svg { height: 24px; width: auto; }
+  nav .logo svg { height: 28px; width: auto; }
   nav button { background: none; border: none; color: #94a3b8; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all .15s; }
   nav button:hover, nav button.active { background: #2d3748; color: #e2e8f0; }
   nav button.active { color: #a78bfa; }
@@ -67,23 +67,16 @@
 <body>
 <nav>
   <div class="logo">
-    <!-- OKX logo: O + K + X pixel grid, white on dark -->
-    <svg viewBox="0 0 120 40" fill="white" xmlns="http://www.w3.org/2000/svg">
-      <!-- O: outer rounded square with inner cutout -->
-      <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M2 4C2 2.9 2.9 2 4 2H32C33.1 2 34 2.9 34 4V36C34 37.1 33.1 38 32 38H4C2.9 38 2 37.1 2 36V4ZM12 14C12 12.9 12.9 12 14 12H22C23.1 12 24 12.9 24 14V26C24 27.1 23.1 28 22 28H14C12.9 28 12 27.1 12 26V14Z"
-        fill="white"/>
-      <!-- K: tall left bar + top-right square + bottom-right square -->
-      <rect x="38" y="2" width="10" height="36" rx="2" fill="white"/>
-      <rect x="51" y="2" width="12" height="16" rx="2" fill="white"/>
-      <rect x="51" y="22" width="12" height="16" rx="2" fill="white"/>
-      <!-- X: 6 squares (top-left, top-mid, top-right / bottom-left, bottom-mid, bottom-right) + center gap -->
-      <rect x="67" y="2"  width="12" height="12" rx="2" fill="white"/>
-      <rect x="81" y="2"  width="12" height="12" rx="2" fill="white"/>
-      <rect x="95" y="2"  width="12" height="12" rx="2" fill="white"/>
-      <rect x="67" y="26" width="12" height="12" rx="2" fill="white"/>
-      <rect x="81" y="26" width="12" height="12" rx="2" fill="white"/>
-      <rect x="95" y="26" width="12" height="12" rx="2" fill="white"/>
+    <svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M385.67 428H171.631C170.311 428 169.045 428.524 168.112 429.458C167.178 430.391 166.654 431.657 166.654 432.978V647.017C166.654 648.337 167.178 649.603 168.112 650.536C169.045 651.47 170.311 651.994 171.631 651.994H385.67C386.991 651.994 388.257 651.47 389.19 650.536C390.124 649.603 390.648 648.337 390.648 647.017V432.978C390.648 431.657 390.124 430.391 389.19 429.458C388.257 428.524 386.991 428 385.67 428ZM315.983 572.352C315.983 573.672 315.459 574.938 314.525 575.872C313.592 576.805 312.326 577.33 311.006 577.33H246.296C244.976 577.33 243.71 576.805 242.776 575.872C241.843 574.938 241.319 573.672 241.319 572.352V507.642C241.319 506.322 241.843 505.056 242.776 504.123C243.71 503.189 244.976 502.665 246.296 502.665H311.006C312.326 502.665 313.592 503.189 314.525 504.123C315.459 505.056 315.983 506.322 315.983 507.642V572.352Z" fill="white"/>
+      <path d="M833.783 502.673H769.074C766.325 502.673 764.096 504.901 764.096 507.65V572.36C764.096 575.109 766.325 577.338 769.074 577.338H833.783C836.532 577.338 838.761 575.109 838.761 572.36V507.65C838.761 504.901 836.532 502.673 833.783 502.673Z" fill="white"/>
+      <path d="M759.088 428.006H694.379C691.63 428.006 689.401 430.234 689.401 432.984V497.693C689.401 500.442 691.63 502.671 694.379 502.671H759.088C761.838 502.671 764.066 500.442 764.066 497.693V432.984C764.066 430.234 761.838 428.006 759.088 428.006Z" fill="white"/>
+      <path d="M908.418 428.006H843.708C840.959 428.006 838.73 430.234 838.73 432.984V497.693C838.73 500.442 840.959 502.671 843.708 502.671H908.418C911.167 502.671 913.395 500.442 913.395 497.693V432.984C913.395 430.234 911.167 428.006 908.418 428.006Z" fill="white"/>
+      <path d="M759.088 577.334H694.379C691.63 577.334 689.401 579.562 689.401 582.311V647.021C689.401 649.77 691.63 651.999 694.379 651.999H759.088C761.838 651.999 764.066 649.77 764.066 647.021V582.311C764.066 579.562 761.838 577.334 759.088 577.334Z" fill="white"/>
+      <path d="M908.418 577.334H843.708C840.959 577.334 838.73 579.562 838.73 582.311V647.021C838.73 649.77 840.959 651.999 843.708 651.999H908.418C911.167 651.999 913.395 649.77 913.395 647.021V582.311C913.395 579.562 911.167 577.334 908.418 577.334Z" fill="white"/>
+      <path d="M646.997 428.006H582.288C579.539 428.006 577.31 430.234 577.31 432.984V497.693C577.31 500.442 579.539 502.671 582.288 502.671H646.997C649.746 502.671 651.975 500.442 651.975 497.693V432.984C651.975 430.234 649.746 428.006 646.997 428.006Z" fill="white"/>
+      <path d="M646.997 577.334H582.288C579.539 577.334 577.31 579.562 577.31 582.311V647.021C577.31 649.77 579.539 651.999 582.288 651.999H646.997C649.746 651.999 651.975 649.77 651.975 647.021V582.311C651.975 579.562 649.746 577.334 646.997 577.334Z" fill="white"/>
+      <path d="M577.31 507.586C577.31 506.266 576.785 505 575.852 504.067C574.918 503.133 573.652 502.609 572.332 502.609H502.645V432.978C502.645 431.657 502.12 430.391 501.187 429.458C500.253 428.524 498.987 428 497.667 428H432.958C431.637 428 430.371 428.524 429.438 429.458C428.504 430.391 427.98 431.657 427.98 432.978V646.905C427.98 648.225 428.504 649.491 429.438 650.424C430.371 651.358 431.637 651.882 432.958 651.882H497.667C498.987 651.882 500.253 651.358 501.187 650.424C502.12 649.491 502.645 648.225 502.645 646.905V577.274H572.332C573.652 577.274 574.918 576.749 575.852 575.816C576.785 574.882 577.31 573.616 577.31 572.296V507.586Z" fill="white"/>
     </svg>
   </div>
   <button class="active" onclick="showPage('send', this)">Send</button>
@@ -182,19 +175,15 @@ function showPage(name, btn) {
   if (name === 'history') loadHistory();
 }
 
-let evtSource = null;
-
 function startSend() {
   const cohort = document.getElementById('send-cohort').value;
   const delay = document.getElementById('send-delay').value;
   const limit = document.getElementById('send-limit').value;
   const dryRun = document.getElementById('dry-run').checked;
-
   document.getElementById('send-btn').disabled = true;
   document.getElementById('stop-btn').style.display = 'inline-block';
   document.getElementById('log-box').innerHTML = '';
   setProgress(0, parseInt(limit));
-
   fetch('/api/send', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -202,18 +191,12 @@ function startSend() {
   }).then(res => {
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
-    let total = parseInt(limit);
     function read() {
       reader.read().then(({done, value}) => {
         if (done) { sendDone(); return; }
-        const text = decoder.decode(value);
-        text.split('\n').forEach(line => {
+        decoder.decode(value).split('\n').forEach(line => {
           if (!line.startsWith('data: ')) return;
-          try {
-            const ev = JSON.parse(line.slice(6));
-            handleEvent(ev, total);
-            if (ev.type === 'start') total = ev.total;
-          } catch(e) {}
+          try { const ev = JSON.parse(line.slice(6)); handleEvent(ev); } catch(e) {}
         });
         read();
       });
@@ -222,27 +205,16 @@ function startSend() {
   }).catch(e => logLine(`Connection error: ${e}`, 'log-error'));
 }
 
-function handleEvent(ev, total) {
-  if (ev.type === 'start') {
-    logLine(`Starting — ${ev.total} contacts loaded`, 'log-info');
-  } else if (ev.type === 'sent') {
-    logLine(`✓ Sent to ${ev.recipient} [${ev.cohort}]`, 'log-sent');
-    setProgress(ev.sent, ev.limit);
-  } else if (ev.type === 'dry_run') {
-    logLine(`▷ [DRY RUN] ${ev.recipient} [${ev.cohort}]: ${ev.message}`, 'log-info');
-  } else if (ev.type === 'skip') {
-    logLine(`– Skip ${ev.recipient}: ${ev.reason}`, 'log-skip');
-  } else if (ev.type === 'flood_wait') {
-    logLine(`⏳ Flood wait ${ev.seconds}s...`, 'log-warn');
-  } else if (ev.type === 'flood_stop') {
-    logLine(`⛔ ${ev.message}`, 'log-error'); sendDone();
-  } else if (ev.type === 'limit') {
-    logLine(ev.message, 'log-warn');
-  } else if (ev.type === 'error') {
-    logLine(`✗ Error ${ev.recipient || ''}: ${ev.message}`, 'log-error');
-  } else if (ev.type === 'done') {
-    logLine(`✔ Done. Sent ${ev.sent} message(s).`, 'log-sent'); sendDone();
-  }
+function handleEvent(ev) {
+  if (ev.type === 'start') logLine(`Starting — ${ev.total} contacts loaded`, 'log-info');
+  else if (ev.type === 'sent') { logLine(`✓ Sent to ${ev.recipient} [${ev.cohort}]`, 'log-sent'); setProgress(ev.sent, ev.limit); }
+  else if (ev.type === 'dry_run') logLine(`▷ [DRY RUN] ${ev.recipient} [${ev.cohort}]: ${ev.message}`, 'log-info');
+  else if (ev.type === 'skip') logLine(`– Skip ${ev.recipient}: ${ev.reason}`, 'log-skip');
+  else if (ev.type === 'flood_wait') logLine(`⏳ Flood wait ${ev.seconds}s...`, 'log-warn');
+  else if (ev.type === 'flood_stop') { logLine(`⛔ ${ev.message}`, 'log-error'); sendDone(); }
+  else if (ev.type === 'limit') logLine(ev.message, 'log-warn');
+  else if (ev.type === 'error') logLine(`✗ Error ${ev.recipient||''}: ${ev.message}`, 'log-error');
+  else if (ev.type === 'done') { logLine(`✔ Done. Sent ${ev.sent} message(s).`, 'log-sent'); sendDone(); }
   document.getElementById('log-box').scrollTop = 999999;
 }
 
@@ -250,99 +222,65 @@ function sendDone() {
   document.getElementById('send-btn').disabled = false;
   document.getElementById('stop-btn').style.display = 'none';
 }
-
-function stopSend() {
-  if (confirm('Stop sending?')) location.reload();
-}
-
+function stopSend() { if (confirm('Stop sending?')) location.reload(); }
 function logLine(text, cls) {
-  const box = document.getElementById('log-box');
   const line = document.createElement('div');
   line.className = cls;
   line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
-  box.appendChild(line);
+  document.getElementById('log-box').appendChild(line);
 }
-
 function setProgress(sent, limit) {
-  const pct = limit > 0 ? Math.min(100, Math.round(sent / limit * 100)) : 0;
-  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-fill').style.width = (limit > 0 ? Math.min(100, Math.round(sent/limit*100)) : 0) + '%';
   document.getElementById('progress-stat').textContent = `${sent} / ${limit} sent`;
 }
 
 let templates = {};
-
 async function loadTemplates() {
-  const res = await fetch('/api/templates');
-  templates = await res.json();
+  templates = await (await fetch('/api/templates')).json();
   renderTemplates();
 }
-
 function renderTemplates() {
-  const LANGS = ['en', 'ru', 'zh'];
+  const LANGS = ['en','ru','zh'];
   const container = document.getElementById('templates-container');
   container.innerHTML = '';
   for (const [cohort, langs] of Object.entries(templates)) {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <span class="badge ${COHORT_BADGE[cohort]||'badge-default'}">${cohort}</span>
-      <span id="saved-${cohort}" class="saved-flash">✓ Saved</span></div>`;
-    const grid = document.createElement('div');
-    grid.className = 'tmpl-grid';
+    const card = document.createElement('div'); card.className = 'card';
+    card.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span class="badge ${COHORT_BADGE[cohort]||'badge-default'}">${cohort}</span><span id="saved-${cohort}" class="saved-flash">✓ Saved</span></div>`;
+    const grid = document.createElement('div'); grid.className = 'tmpl-grid';
     LANGS.forEach(lang => {
       const col = document.createElement('div');
-      col.innerHTML = `<div class="tmpl-label">${lang.toUpperCase()}</div>
-        <textarea id="tmpl-${cohort}-${lang}" placeholder="${cohort} (${lang})...">${langs[lang]||''}</textarea>
-        <button class="btn btn-ghost save-btn" onclick="saveTemplate('${cohort}','${lang}')">Save</button>`;
+      col.innerHTML = `<div class="tmpl-label">${lang.toUpperCase()}</div><textarea id="tmpl-${cohort}-${lang}" placeholder="${cohort} (${lang})...">${langs[lang]||''}</textarea><button class="btn btn-ghost save-btn" onclick="saveTemplate('${cohort}','${lang}')">Save</button>`;
       grid.appendChild(col);
     });
-    card.appendChild(grid);
-    container.appendChild(card);
+    card.appendChild(grid); container.appendChild(card);
   }
 }
-
 async function saveTemplate(cohort, lang) {
-  const message = document.getElementById(`tmpl-${cohort}-${lang}`).value;
-  await fetch('/api/templates', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({cohort, language: lang, message})
-  });
+  await fetch('/api/templates', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({cohort, language: lang, message: document.getElementById(`tmpl-${cohort}-${lang}`).value})});
   const flash = document.getElementById(`saved-${cohort}`);
-  flash.style.opacity = '1';
-  setTimeout(() => flash.style.opacity = '0', 1500);
+  flash.style.opacity = '1'; setTimeout(() => flash.style.opacity = '0', 1500);
 }
 
 async function loadContacts() {
   const cohort = document.getElementById('contacts-cohort-filter').value;
-  const url = '/api/contacts' + (cohort ? `?cohort=${encodeURIComponent(cohort)}` : '');
   document.getElementById('contacts-table').innerHTML = '<tr><td colspan="4" style="color:#475569;text-align:center;padding:24px">Loading...</td></tr>';
   try {
-    const res = await fetch(url);
-    const data = await res.json();
+    const data = await (await fetch('/api/contacts' + (cohort ? `?cohort=${encodeURIComponent(cohort)}` : ''))).json();
     document.getElementById('contacts-count').textContent = `${data.total} contacts`;
-    if (!data.contacts.length) {
-      document.getElementById('contacts-table').innerHTML = '<tr><td colspan="4" style="color:#475569;text-align:center;padding:24px">No contacts found</td></tr>';
-      return;
-    }
-    document.getElementById('contacts-table').innerHTML = data.contacts.map(c => {
-      const badge = COHORT_BADGE[c.cohort] || 'badge-default';
-      return `<tr><td>${c.name||'—'}</td><td style="color:#94a3b8">${c.tg_username||c.phone||'—'}</td><td><span class="badge ${badge}">${c.cohort||'—'}</span></td><td>${(c.language||'en').toUpperCase()}</td></tr>`;
-    }).join('');
+    document.getElementById('contacts-table').innerHTML = data.contacts.length
+      ? data.contacts.map(c => `<tr><td>${c.name||'—'}</td><td style="color:#94a3b8">${c.tg_username||c.phone||'—'}</td><td><span class="badge ${COHORT_BADGE[c.cohort]||'badge-default'}">${c.cohort||'—'}</span></td><td>${(c.language||'en').toUpperCase()}</td></tr>`).join('')
+      : '<tr><td colspan="4" style="color:#475569;text-align:center;padding:24px">No contacts found</td></tr>';
   } catch(e) {
     document.getElementById('contacts-table').innerHTML = `<tr><td colspan="4" style="color:#f87171;text-align:center;padding:24px">${e}</td></tr>`;
   }
 }
 
 async function loadHistory() {
-  const res = await fetch('/api/log');
-  const data = await res.json();
+  const data = await (await fetch('/api/log')).json();
   const container = document.getElementById('history-container');
-  if (!data.entries.length) { container.innerHTML = '<span style="color:#475569">No messages sent yet.</span>'; return; }
-  container.innerHTML = data.entries.map(e => {
-    const badge = COHORT_BADGE[e.cohort] || 'badge-default';
-    return `<div class="log-history-entry"><span class="log-ts">${e.ts.replace('T',' ').slice(0,19)} UTC</span><span>${e.recipient}</span><span class="badge ${badge}">${e.cohort||'—'}</span><span class="log-sent">${e.status}</span></div>`;
-  }).join('');
+  container.innerHTML = data.entries.length
+    ? data.entries.map(e => `<div class="log-history-entry"><span class="log-ts">${e.ts.replace('T',' ').slice(0,19)} UTC</span><span>${e.recipient}</span><span class="badge ${COHORT_BADGE[e.cohort]||'badge-default'}">${e.cohort||'—'}</span><span class="log-sent">${e.status}</span></div>`).join('')
+    : '<span style="color:#475569">No messages sent yet.</span>';
 }
 </script>
 </body>
