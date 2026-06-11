@@ -9,7 +9,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from telethon import TelegramClient
-from telethon.errors import FloodWaitError, UserPrivacyRestrictedError, InputUserDeactivatedError
+from telethon.errors import FloodWaitError, PeerFloodError, UserPrivacyRestrictedError, InputUserDeactivatedError
 from telethon.tl.types import User
 
 load_dotenv()
@@ -21,19 +21,26 @@ PHONE = os.getenv("PHONE")
 if not API_ID or not API_HASH:
     sys.exit("ERROR: API_ID and API_HASH must be set in your .env file")
 
+DEFAULT_DELAY = 5       # seconds between messages
+DEFAULT_DAILY_LIMIT = 150
 
-async def send_messages(contacts: list[dict], dry_run: bool = False) -> None:
-    """
-    Send a DM to each contact in the list.
 
-    Each contact dict must have:
-      - 'username' OR 'phone': how to resolve the recipient
-      - 'message': text to send (supports {name} placeholder)
-    """
+async def send_messages(
+    contacts: list[dict],
+    dry_run: bool = False,
+    delay: int = DEFAULT_DELAY,
+    daily_limit: int = DEFAULT_DAILY_LIMIT,
+) -> None:
+    sent = 0
+
     async with TelegramClient("session", int(API_ID), API_HASH) as client:
         await client.start(phone=PHONE)
 
         for contact in contacts:
+            if sent >= daily_limit:
+                print(f"[LIMIT] Daily limit of {daily_limit} reached. Stopping.")
+                break
+
             recipient = contact.get("username") or contact.get("phone")
             message = contact.get("message", "").strip()
             name = contact.get("name", "")
@@ -46,6 +53,7 @@ async def send_messages(contacts: list[dict], dry_run: bool = False) -> None:
 
             if dry_run:
                 print(f"[DRY RUN] To: {recipient} | Message: {message!r}")
+                sent += 1
                 continue
 
             try:
@@ -55,13 +63,20 @@ async def send_messages(contacts: list[dict], dry_run: bool = False) -> None:
                     continue
 
                 await client.send_message(entity, message)
-                print(f"[SENT] {recipient}")
+                sent += 1
+                print(f"[SENT {sent}/{daily_limit}] {recipient}")
+
+            except PeerFloodError:
+                # Pre-ban warning — stop immediately
+                print("[STOP] PeerFloodError: Telegram flagged this account. Stop and wait 24h before retrying.")
+                sys.exit(1)
 
             except FloodWaitError as e:
-                print(f"[FLOOD] Rate limited — waiting {e.seconds}s before continuing")
+                print(f"[FLOOD] Rate limited — waiting {e.seconds}s")
                 await asyncio.sleep(e.seconds)
                 await client.send_message(recipient, message)
-                print(f"[SENT] {recipient} (after flood wait)")
+                sent += 1
+                print(f"[SENT {sent}/{daily_limit}] {recipient} (after flood wait)")
 
             except UserPrivacyRestrictedError:
                 print(f"[SKIP] {recipient} has privacy settings that block messages")
@@ -72,12 +87,12 @@ async def send_messages(contacts: list[dict], dry_run: bool = False) -> None:
             except Exception as e:
                 print(f"[ERROR] {recipient}: {e}")
 
-            # Polite delay to avoid triggering Telegram's anti-spam
-            await asyncio.sleep(2)
+            await asyncio.sleep(delay)
+
+    print(f"\nDone. Sent {sent} message(s).")
 
 
 def load_contacts_from_csv(path: str) -> list[dict]:
-    """Load contacts from a CSV file with columns: username/phone, name, message"""
     contacts = []
     with open(path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -90,22 +105,16 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Send Telegram DMs to existing contacts")
-    parser.add_argument(
-        "--csv",
-        required=True,
-        help="Path to CSV file with columns: username, name, message",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Print messages without actually sending them",
-    )
+    parser.add_argument("--csv", required=True, help="CSV file with columns: username, phone, name, message")
+    parser.add_argument("--dry-run", action="store_true", help="Preview messages without sending")
+    parser.add_argument("--delay", type=int, default=DEFAULT_DELAY, help=f"Seconds between messages (default: {DEFAULT_DELAY})")
+    parser.add_argument("--daily-limit", type=int, default=DEFAULT_DAILY_LIMIT, help=f"Max messages per run (default: {DEFAULT_DAILY_LIMIT})")
     args = parser.parse_args()
 
     if not Path(args.csv).exists():
         sys.exit(f"ERROR: CSV file not found: {args.csv}")
 
     contacts = load_contacts_from_csv(args.csv)
-    print(f"Loaded {len(contacts)} contacts from {args.csv}")
+    print(f"Loaded {len(contacts)} contacts. Delay: {args.delay}s | Limit: {args.daily_limit}/day")
 
-    asyncio.run(send_messages(contacts, dry_run=args.dry_run))
+    asyncio.run(send_messages(contacts, dry_run=args.dry_run, delay=args.delay, daily_limit=args.daily_limit))
