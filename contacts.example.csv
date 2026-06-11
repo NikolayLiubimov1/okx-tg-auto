@@ -1,0 +1,3 @@
+username,phone,name,message
+@some_username,,Alice,Hi {name}! Just following up on our conversation.
+,+1234567890,Bob,Hey {name} — wanted to check in with you.
