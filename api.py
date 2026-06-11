@@ -19,7 +19,7 @@ from pydantic import BaseModel
 load_dotenv()
 
 sys.path.insert(0, str(Path(__file__).parent))
-from sender import send_messages, load_contacts_from_csv, load_templates, sort_by_priority, resolve_message
+from sender import load_contacts_from_csv, load_templates, sort_by_priority, resolve_message
 from sheets import load_contacts_from_sheets
 
 TEMPLATES_PATH = Path("templates.yaml")
@@ -27,9 +27,6 @@ LOG_PATH = Path("send_log.jsonl")
 
 app = FastAPI(title="TG Auto")
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-COHORTS = ["P0", "P1", "P2", "TV Affiliates", "FTT Affiliates"]
-LANGUAGES = ["en", "ru", "zh"]
 
 
 def append_log(entry: dict):
@@ -89,7 +86,8 @@ async def send(req: SendRequest):
         try:
             contacts = load_contacts_from_sheets()
         except Exception as e:
-            yield f"data: {{\"type\": \"error\", \"message\": \"{e}\"}}\ n\n"
+            msg = str(e).replace('"', "'")
+            yield f'data: {{"type": "error", "message": "{msg}"}}\n\n'
             return
 
         if req.cohort:
@@ -119,6 +117,7 @@ async def send(req: SendRequest):
                 recipient = contact.get("tg_username") or contact.get("phone", "").strip()
                 name = contact.get("name", "")
                 cohort = contact.get("cohort", "")
+                lang = contact.get("language", "en")
 
                 if not recipient:
                     yield f'data: {{"type": "skip", "recipient": "{name}", "reason": "no username or phone"}}\n\n'
@@ -126,7 +125,7 @@ async def send(req: SendRequest):
 
                 message = resolve_message(templates, contact)
                 if not message:
-                    yield f'data: {{"type": "skip", "recipient": "{recipient}", "reason": "no template for {cohort}/{contact.get(\"language\",\"en\")}"}}\ n\n'
+                    yield f'data: {{"type": "skip", "recipient": "{recipient}", "reason": "no template for {cohort}/{lang}"}}\n\n'
                     continue
 
                 if req.dry_run:
@@ -146,7 +145,7 @@ async def send(req: SendRequest):
                     yield f'data: {{"type": "sent", "recipient": "{recipient}", "cohort": "{cohort}", "sent": {sent}, "limit": {req.daily_limit}}}\n\n'
 
                 except PeerFloodError:
-                    yield f'data: {{"type": "flood_stop", "message": "PeerFloodError — stopping. Wait 24h."}}\n\n'
+                    yield f'data: {{"type": "flood_stop", "message": "PeerFloodError - stopping. Wait 24h."}}\n\n'
                     return
 
                 except FloodWaitError as e:
@@ -163,7 +162,8 @@ async def send(req: SendRequest):
                     yield f'data: {{"type": "skip", "recipient": "{recipient}", "reason": "account deactivated"}}\n\n'
 
                 except Exception as e:
-                    yield f'data: {{"type": "error", "recipient": "{recipient}", "message": "{e}"}}\n\n'
+                    err = str(e).replace('"', "'")
+                    yield f'data: {{"type": "error", "recipient": "{recipient}", "message": "{err}"}}\n\n'
 
                 await asyncio.sleep(req.delay)
 
