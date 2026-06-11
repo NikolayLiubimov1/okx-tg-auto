@@ -1,44 +1,62 @@
 # okx-tg-auto
 
-Telegram DM automation tool — sends personalised direct messages to existing contacts.
+Telegram DM automation — sends personalised messages to existing contacts, segmented by cohort and language.
 
 ## Setup
 
 ```bash
 pip install -r requirements.txt
 cp .env.example .env
-# Edit .env and fill in your API_ID and API_HASH
+# Fill in API_ID, API_HASH, PHONE, SPREADSHEET_ID
 ```
 
-## Usage
+### Google Sheets setup
 
-### 1. Create a contacts CSV
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → Create a project
+2. Enable **Google Sheets API**
+3. Create a **Service Account** → download the JSON key → save as `service_account.json` in this folder
+4. Share your Google Sheet with the service account email (viewer access is enough)
+5. Copy the spreadsheet ID from the URL and add to `.env`
 
-Copy `contacts.example.csv` and fill in your contacts:
+### Required sheet columns
 
 | Column | Description |
 |--------|-------------|
-| `username` | Telegram @username (use this OR phone) |
-| `phone` | Phone number in international format |
-| `name` | Used to personalise the message via `{name}` |
-| `message` | Message text. Use `{name}` as a placeholder. |
+| `tg_username` | Telegram @handle |
+| `phone` | International format (alternative to username) |
+| `name` | Used in `{name}` placeholder |
+| `cohort` | `P0`, `P1`, `P2`, `TV Affiliates`, `FTT Affiliates` |
+| `language` | `en`, `ru`, `zh` (falls back to `en` if missing) |
 
-### 2. Dry run (no messages sent)
-
-```bash
-python sender.py --csv contacts.csv --dry-run
-```
-
-### 3. Send messages
+## Usage
 
 ```bash
+# Dry run — preview all messages
+python sender.py --dry-run
+
+# Send to one cohort only
+python sender.py --cohort P0
+python sender.py --cohort "TV Affiliates"
+
+# Send to all cohorts (sorted P0 → P1 → P2 → TV Affiliates → FTT Affiliates)
+python sender.py
+
+# Use a local CSV instead of Google Sheets
 python sender.py --csv contacts.csv
+
+# Override rate limits
+python sender.py --cohort P0 --delay 3 --daily-limit 200
 ```
 
-On first run you will be prompted to enter your phone number and a login code sent by Telegram. A `session` file is created locally so you only authenticate once.
+## Message templates
 
-## Notes
+Edit `templates.yaml` to set your message copy per cohort and language:
 
-- A 2-second delay is inserted between messages to avoid Telegram anti-spam limits.
-- `FloodWaitError` is handled automatically — the script waits and retries.
-- The `session` file and `.env` are gitignored and never committed.
+```yaml
+P0:
+  en: "Hi {name}, as one of our top clients..."
+  ru: "Привет {name}..."
+  zh: "你好 {name}..."
+```
+
+If a contact's language has no template, it falls back to `en`.

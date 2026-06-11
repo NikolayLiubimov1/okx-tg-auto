@@ -1,0 +1,30 @@
+# Message templates by cohort and language.
+# Supported languages: en, ru, zh (add more as needed)
+# Available placeholders: {name}
+#
+# Add your message copy below.
+
+P0:
+  en: ""
+  ru: ""
+  zh: ""
+
+P1:
+  en: ""
+  ru: ""
+  zh: ""
+
+P2:
+  en: ""
+  ru: ""
+  zh: ""
+
+TV Affiliates:
+  en: ""
+  ru: ""
+  zh: ""
+
+FTT Affiliates:
+  en: ""
+  ru: ""
+  zh: ""
