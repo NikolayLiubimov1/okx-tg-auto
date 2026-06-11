@@ -9,7 +9,7 @@
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
   nav { background: #1a1d2e; border-bottom: 1px solid #2d3748; padding: 0 24px; display: flex; align-items: center; gap: 8px; height: 56px; }
   nav .logo { display: flex; align-items: center; margin-right: 24px; }
-  nav .logo svg { height: 22px; width: auto; }
+  nav .logo svg { height: 24px; width: auto; }
   nav button { background: none; border: none; color: #94a3b8; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all .15s; }
   nav button:hover, nav button.active { background: #2d3748; color: #e2e8f0; }
   nav button.active { color: #a78bfa; }
@@ -67,24 +67,23 @@
 <body>
 <nav>
   <div class="logo">
-    <!-- OKX logo SVG -->
-    <svg viewBox="0 0 100 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- O -->
-      <rect x="0" y="0" width="26" height="34" rx="3" fill="white"/>
-      <rect x="7" y="9" width="12" height="16" rx="2" fill="#1a1d2e"/>
-      <!-- K -->
-      <rect x="30" y="0" width="8" height="34" rx="2" fill="white"/>
-      <rect x="40" y="0" width="8" height="15" rx="2" fill="white"/>
-      <rect x="40" y="19" width="8" height="15" rx="2" fill="white"/>
-      <!-- X -->
-      <rect x="52" y="0" width="8" height="8" rx="2" fill="white"/>
-      <rect x="62" y="0" width="8" height="8" rx="2" fill="white"/>
-      <rect x="72" y="0" width="8" height="8" rx="2" fill="white"/>
-      <rect x="52" y="13" width="8" height="8" rx="2" fill="white"/>
-      <rect x="72" y="13" width="8" height="8" rx="2" fill="white"/>
-      <rect x="52" y="26" width="8" height="8" rx="2" fill="white"/>
-      <rect x="62" y="26" width="8" height="8" rx="2" fill="white"/>
-      <rect x="72" y="26" width="8" height="8" rx="2" fill="white"/>
+    <!-- OKX logo: O + K + X pixel grid, white on dark -->
+    <svg viewBox="0 0 120 40" fill="white" xmlns="http://www.w3.org/2000/svg">
+      <!-- O: outer rounded square with inner cutout -->
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M2 4C2 2.9 2.9 2 4 2H32C33.1 2 34 2.9 34 4V36C34 37.1 33.1 38 32 38H4C2.9 38 2 37.1 2 36V4ZM12 14C12 12.9 12.9 12 14 12H22C23.1 12 24 12.9 24 14V26C24 27.1 23.1 28 22 28H14C12.9 28 12 27.1 12 26V14Z"
+        fill="white"/>
+      <!-- K: tall left bar + top-right square + bottom-right square -->
+      <rect x="38" y="2" width="10" height="36" rx="2" fill="white"/>
+      <rect x="51" y="2" width="12" height="16" rx="2" fill="white"/>
+      <rect x="51" y="22" width="12" height="16" rx="2" fill="white"/>
+      <!-- X: 6 squares (top-left, top-mid, top-right / bottom-left, bottom-mid, bottom-right) + center gap -->
+      <rect x="67" y="2"  width="12" height="12" rx="2" fill="white"/>
+      <rect x="81" y="2"  width="12" height="12" rx="2" fill="white"/>
+      <rect x="95" y="2"  width="12" height="12" rx="2" fill="white"/>
+      <rect x="67" y="26" width="12" height="12" rx="2" fill="white"/>
+      <rect x="81" y="26" width="12" height="12" rx="2" fill="white"/>
+      <rect x="95" y="26" width="12" height="12" rx="2" fill="white"/>
     </svg>
   </div>
   <button class="active" onclick="showPage('send', this)">Send</button>
@@ -183,7 +182,6 @@ function showPage(name, btn) {
   if (name === 'history') loadHistory();
 }
 
-// --- SEND ---
 let evtSource = null;
 
 function startSend() {
@@ -195,7 +193,7 @@ function startSend() {
   document.getElementById('send-btn').disabled = true;
   document.getElementById('stop-btn').style.display = 'inline-block';
   document.getElementById('log-box').innerHTML = '';
-  setProgress(0, 0, parseInt(limit));
+  setProgress(0, parseInt(limit));
 
   fetch('/api/send', {
     method: 'POST',
@@ -205,7 +203,6 @@ function startSend() {
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let total = parseInt(limit);
-
     function read() {
       reader.read().then(({done, value}) => {
         if (done) { sendDone(); return; }
@@ -226,12 +223,11 @@ function startSend() {
 }
 
 function handleEvent(ev, total) {
-  const box = document.getElementById('log-box');
   if (ev.type === 'start') {
     logLine(`Starting — ${ev.total} contacts loaded`, 'log-info');
   } else if (ev.type === 'sent') {
     logLine(`✓ Sent to ${ev.recipient} [${ev.cohort}]`, 'log-sent');
-    setProgress(ev.sent, ev.limit, ev.limit);
+    setProgress(ev.sent, ev.limit);
   } else if (ev.type === 'dry_run') {
     logLine(`▷ [DRY RUN] ${ev.recipient} [${ev.cohort}]: ${ev.message}`, 'log-info');
   } else if (ev.type === 'skip') {
@@ -239,17 +235,15 @@ function handleEvent(ev, total) {
   } else if (ev.type === 'flood_wait') {
     logLine(`⏳ Flood wait ${ev.seconds}s...`, 'log-warn');
   } else if (ev.type === 'flood_stop') {
-    logLine(`⛔ ${ev.message}`, 'log-error');
-    sendDone();
+    logLine(`⛔ ${ev.message}`, 'log-error'); sendDone();
   } else if (ev.type === 'limit') {
     logLine(ev.message, 'log-warn');
   } else if (ev.type === 'error') {
     logLine(`✗ Error ${ev.recipient || ''}: ${ev.message}`, 'log-error');
   } else if (ev.type === 'done') {
-    logLine(`✔ Done. Sent ${ev.sent} message(s).`, 'log-sent');
-    sendDone();
+    logLine(`✔ Done. Sent ${ev.sent} message(s).`, 'log-sent'); sendDone();
   }
-  box.scrollTop = box.scrollHeight;
+  document.getElementById('log-box').scrollTop = 999999;
 }
 
 function sendDone() {
@@ -275,7 +269,6 @@ function setProgress(sent, limit) {
   document.getElementById('progress-stat').textContent = `${sent} / ${limit} sent`;
 }
 
-// --- TEMPLATES ---
 let templates = {};
 
 async function loadTemplates() {
@@ -293,14 +286,13 @@ function renderTemplates() {
     card.className = 'card';
     card.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
       <span class="badge ${COHORT_BADGE[cohort]||'badge-default'}">${cohort}</span>
-      <span id="saved-${cohort}" class="saved-flash">✓ Saved</span>
-    </div>`;
+      <span id="saved-${cohort}" class="saved-flash">✓ Saved</span></div>`;
     const grid = document.createElement('div');
     grid.className = 'tmpl-grid';
     LANGS.forEach(lang => {
       const col = document.createElement('div');
       col.innerHTML = `<div class="tmpl-label">${lang.toUpperCase()}</div>
-        <textarea id="tmpl-${cohort}-${lang}" placeholder="Enter message for ${cohort} (${lang})...">${(langs[lang]||'')}</textarea>
+        <textarea id="tmpl-${cohort}-${lang}" placeholder="${cohort} (${lang})...">${langs[lang]||''}</textarea>
         <button class="btn btn-ghost save-btn" onclick="saveTemplate('${cohort}','${lang}')">Save</button>`;
       grid.appendChild(col);
     });
@@ -321,7 +313,6 @@ async function saveTemplate(cohort, lang) {
   setTimeout(() => flash.style.opacity = '0', 1500);
 }
 
-// --- CONTACTS ---
 async function loadContacts() {
   const cohort = document.getElementById('contacts-cohort-filter').value;
   const url = '/api/contacts' + (cohort ? `?cohort=${encodeURIComponent(cohort)}` : '');
@@ -336,36 +327,21 @@ async function loadContacts() {
     }
     document.getElementById('contacts-table').innerHTML = data.contacts.map(c => {
       const badge = COHORT_BADGE[c.cohort] || 'badge-default';
-      const recipient = c.tg_username || c.phone || '—';
-      return `<tr>
-        <td>${c.name||'—'}</td>
-        <td style="color:#94a3b8">${recipient}</td>
-        <td><span class="badge ${badge}">${c.cohort||'—'}</span></td>
-        <td>${(c.language||'en').toUpperCase()}</td>
-      </tr>`;
+      return `<tr><td>${c.name||'—'}</td><td style="color:#94a3b8">${c.tg_username||c.phone||'—'}</td><td><span class="badge ${badge}">${c.cohort||'—'}</span></td><td>${(c.language||'en').toUpperCase()}</td></tr>`;
     }).join('');
   } catch(e) {
     document.getElementById('contacts-table').innerHTML = `<tr><td colspan="4" style="color:#f87171;text-align:center;padding:24px">${e}</td></tr>`;
   }
 }
 
-// --- HISTORY ---
 async function loadHistory() {
   const res = await fetch('/api/log');
   const data = await res.json();
   const container = document.getElementById('history-container');
-  if (!data.entries.length) {
-    container.innerHTML = '<span style="color:#475569">No messages sent yet.</span>';
-    return;
-  }
+  if (!data.entries.length) { container.innerHTML = '<span style="color:#475569">No messages sent yet.</span>'; return; }
   container.innerHTML = data.entries.map(e => {
     const badge = COHORT_BADGE[e.cohort] || 'badge-default';
-    return `<div class="log-history-entry">
-      <span class="log-ts">${e.ts.replace('T',' ').slice(0,19)} UTC</span>
-      <span>${e.recipient}</span>
-      <span class="badge ${badge}">${e.cohort||'—'}</span>
-      <span class="log-sent">${e.status}</span>
-    </div>`;
+    return `<div class="log-history-entry"><span class="log-ts">${e.ts.replace('T',' ').slice(0,19)} UTC</span><span>${e.recipient}</span><span class="badge ${badge}">${e.cohort||'—'}</span><span class="log-sent">${e.status}</span></div>`;
   }).join('');
 }
 </script>
